@@ -1,0 +1,41 @@
+{
+  "config": {
+    "data_path": "data\\data.csv",
+    "artifacts_dir": "artifacts",
+    "test_size": 0.2,
+    "random_seed": 42,
+    "batch_size": 64,
+    "epochs": 1,
+    "learning_rate": 0.001,
+    "max_vocab_size": 20000,
+    "max_sequence_length": 128,
+    "embedding_dim": 128,
+    "hidden_dim": 128,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "lowercase": true
+  },
+  "device": "cpu",
+  "train_size": 4855,
+  "test_size": 1214,
+  "vocab_size": 20000,
+  "best_test_metrics": {
+    "loss": 0.47546982284039996,
+    "accuracy": 0.78665568369028,
+    "precision": 0.7115613825983313,
+    "recall": 0.9723127035830619,
+    "f1": 0.8217481073640743
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.5871493548492447,
+      "test_loss": 0.47546982284039996,
+      "test_accuracy": 0.78665568369028,
+      "test_precision": 0.7115613825983313,
+      "test_recall": 0.9723127035830619,
+      "test_f1": 0.8217481073640743
+    }
+  ],
+  "duration_seconds": 30.907817300001625
+}
