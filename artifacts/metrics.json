@@ -4,11 +4,11 @@
     "artifacts_dir": "artifacts",
     "test_size": 0.2,
     "random_seed": 42,
-    "batch_size": 64,
+    "batch_size": 256,
     "epochs": 1,
     "learning_rate": 0.001,
     "max_vocab_size": 20000,
-    "max_sequence_length": 128,
+    "max_sequence_length": 64,
     "embedding_dim": 128,
     "hidden_dim": 128,
     "num_layers": 1,
@@ -19,23 +19,34 @@
   "train_size": 4855,
   "test_size": 1214,
   "vocab_size": 20000,
+  "checkpoint_path": "artifacts\\checkpoints\\best.ckpt",
   "best_test_metrics": {
-    "loss": 0.47546982284039996,
-    "accuracy": 0.78665568369028,
-    "precision": 0.7115613825983313,
-    "recall": 0.9723127035830619,
-    "f1": 0.8217481073640743
+    "loss": 0.6209906935691833,
+    "accuracy": 0.6779242157936096,
+    "precision": 0.706099808216095,
+    "recall": 0.6221498250961304,
+    "f1": 0.6614718437194824
   },
   "history": [
     {
-      "epoch": 1,
-      "train_loss": 0.5871493548492447,
-      "test_loss": 0.47546982284039996,
-      "test_accuracy": 0.78665568369028,
-      "test_precision": 0.7115613825983313,
-      "test_recall": 0.9723127035830619,
-      "test_f1": 0.8217481073640743
+      "epoch": 0,
+      "step": 18,
+      "test_accuracy": 0.6779242157936096,
+      "test_f1": 0.6614718437194824,
+      "test_loss": 0.6209906935691833,
+      "test_precision": 0.706099808216095,
+      "test_recall": 0.6221498250961304,
+      "train_loss": ""
+    },
+    {
+      "epoch": 0,
+      "step": 18,
+      "test_accuracy": "",
+      "test_f1": "",
+      "test_loss": "",
+      "test_precision": "",
+      "test_recall": "",
+      "train_loss": 0.6575849652290344
     }
-  ],
-  "duration_seconds": 30.907817300001625
+  ]
 }

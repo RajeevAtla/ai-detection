@@ -5,7 +5,7 @@ differentiating between ai and human written text
 https://www.kaggle.com/datasets/hasanyiitakbulut/ai-and-human-text-dataset
 
 ## training scaffold
-This repo includes a minimal PyTorch LSTM training scaffold for classifying `AI` vs `Human` text from [`data/data.csv`](data/data.csv).
+This repo includes a minimal PyTorch Lightning LSTM training scaffold for classifying `AI` vs `Human` text from [`data/data.csv`](data/data.csv).
 
 ## setup with uv
 ```powershell
@@ -25,8 +25,9 @@ uv run python scripts/train_lstm.py --epochs 3 --batch-size 64 --max-sequence-le
 ## outputs
 Training writes:
 
-- `artifacts/checkpoints/best.pt`
+- `artifacts/checkpoints/best.ckpt`
 - `artifacts/metrics.json`
+- `artifacts/vocab.json`
 - `artifacts/splits/train.csv`
 - `artifacts/splits/test.csv`
 

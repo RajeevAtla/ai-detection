@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 from pathlib import Path
 import re
 
+import lightning.pytorch as pl
 import pandas as pd
 import torch
 from sklearn.model_selection import train_test_split
@@ -96,15 +96,6 @@ class TextDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         return sequence, label
 
 
-@dataclass(slots=True)
-class DataBundle:
-    train_loader: DataLoader
-    test_loader: DataLoader
-    vocab: dict[str, int]
-    train_size: int
-    test_size: int
-
-
 def make_collate_fn(pad_id: int):
     def collate_fn(batch: list[tuple[torch.Tensor, torch.Tensor]]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         sequences, labels = zip(*batch)
@@ -116,32 +107,58 @@ def make_collate_fn(pad_id: int):
     return collate_fn
 
 
-def build_dataloaders(config: TrainConfig) -> DataBundle:
-    frame = load_dataframe(config.data_path)
-    train_frame, test_frame = stratified_split(frame, config)
-    save_split_artifacts(train_frame, test_frame, config.split_dir)
+class TextDataModule(pl.LightningDataModule):
+    def __init__(self, config: TrainConfig) -> None:
+        super().__init__()
+        self.config = config
+        self.vocab: dict[str, int] = {}
+        self.train_size = 0
+        self.test_size = 0
+        self._train_dataset: TextDataset | None = None
+        self._test_dataset: TextDataset | None = None
+        self._collate_fn = None
 
-    vocab = build_vocab(train_frame["Text"].tolist(), config)
-    train_dataset = TextDataset(train_frame["Text"].tolist(), train_frame["label"].tolist(), vocab, config)
-    test_dataset = TextDataset(test_frame["Text"].tolist(), test_frame["label"].tolist(), vocab, config)
-    collate_fn = make_collate_fn(vocab[PAD_TOKEN])
+    def setup(self, stage: str | None = None) -> None:
+        if self._train_dataset is not None and self._test_dataset is not None:
+            return
 
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=config.batch_size,
-        shuffle=True,
-        collate_fn=collate_fn,
-    )
-    test_loader = DataLoader(
-        test_dataset,
-        batch_size=config.batch_size,
-        shuffle=False,
-        collate_fn=collate_fn,
-    )
-    return DataBundle(
-        train_loader=train_loader,
-        test_loader=test_loader,
-        vocab=vocab,
-        train_size=len(train_dataset),
-        test_size=len(test_dataset),
-    )
+        frame = load_dataframe(self.config.data_path)
+        train_frame, test_frame = stratified_split(frame, self.config)
+        save_split_artifacts(train_frame, test_frame, self.config.split_dir)
+
+        self.vocab = build_vocab(train_frame["Text"].tolist(), self.config)
+        self._collate_fn = make_collate_fn(self.vocab[PAD_TOKEN])
+        self._train_dataset = TextDataset(
+            train_frame["Text"].tolist(),
+            train_frame["label"].tolist(),
+            self.vocab,
+            self.config,
+        )
+        self._test_dataset = TextDataset(
+            test_frame["Text"].tolist(),
+            test_frame["label"].tolist(),
+            self.vocab,
+            self.config,
+        )
+        self.train_size = len(self._train_dataset)
+        self.test_size = len(self._test_dataset)
+
+    def train_dataloader(self) -> DataLoader:
+        if self._train_dataset is None or self._collate_fn is None:
+            raise RuntimeError("Data module must be set up before requesting dataloaders.")
+        return DataLoader(
+            self._train_dataset,
+            batch_size=self.config.batch_size,
+            shuffle=True,
+            collate_fn=self._collate_fn,
+        )
+
+    def val_dataloader(self) -> DataLoader:
+        if self._test_dataset is None or self._collate_fn is None:
+            raise RuntimeError("Data module must be set up before requesting dataloaders.")
+        return DataLoader(
+            self._test_dataset,
+            batch_size=self.config.batch_size,
+            shuffle=False,
+            collate_fn=self._collate_fn,
+        )

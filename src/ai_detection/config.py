@@ -25,7 +25,7 @@ class TrainConfig:
 
     @property
     def checkpoint_path(self) -> Path:
-        return self.artifacts_dir / "checkpoints" / "best.pt"
+        return self.artifacts_dir / "checkpoints" / "best.ckpt"
 
     @property
     def metrics_path(self) -> Path:
@@ -34,3 +34,7 @@ class TrainConfig:
     @property
     def split_dir(self) -> Path:
         return self.artifacts_dir / "splits"
+
+    @property
+    def vocab_path(self) -> Path:
+        return self.artifacts_dir / "vocab.json"
