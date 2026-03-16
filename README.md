@@ -12,22 +12,25 @@ This repo includes a minimal PyTorch Lightning LSTM training scaffold for classi
 uv sync
 ```
 
-## train
+## run study
 ```powershell
 uv run python scripts/train_lstm.py
 ```
 
 Optional flags:
 ```powershell
-uv run python scripts/train_lstm.py --epochs 3 --batch-size 64 --max-sequence-length 128
+uv run python scripts/train_lstm.py --batch-size 64 --sequence-lengths 64 128 256 --max-epochs 10
 ```
 
 ## outputs
-Training writes:
+The study writes:
 
-- `artifacts/checkpoints/best.ckpt`
-- `artifacts/metrics.json`
-- `artifacts/vocab.json`
-- `artifacts/splits/train.csv`
-- `artifacts/splits/test.csv`
+- per-sequence-length Lightning runs under `artifacts/study/seq_len_*`
+- `artifacts/study/study_metrics.csv`
+- `artifacts/study/study_summary.json`
+- `artifacts/study/plots/train_loss.png`
+- `artifacts/study/plots/test_loss.png`
+- `artifacts/study/plots/train_f1.png`
+- `artifacts/study/plots/test_f1.png`
+- `artifacts/study/plots/test_confusion_matrix.png`
 

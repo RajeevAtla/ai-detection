@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 import re
 
@@ -96,15 +97,25 @@ class TextDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         return sequence, label
 
 
-def make_collate_fn(pad_id: int):
-    def collate_fn(batch: list[tuple[torch.Tensor, torch.Tensor]]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+@dataclass(slots=True)
+class PadCollate:
+    pad_id: int
+
+    def __call__(self, batch: list[tuple[torch.Tensor, torch.Tensor]]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         sequences, labels = zip(*batch)
         lengths = torch.tensor([len(sequence) for sequence in sequences], dtype=torch.long)
-        padded = pad_sequence(sequences, batch_first=True, padding_value=pad_id)
+        padded = pad_sequence(sequences, batch_first=True, padding_value=self.pad_id)
         label_tensor = torch.stack(labels)
         return padded, lengths, label_tensor
 
-    return collate_fn
+def _loader_kwargs(config: TrainConfig) -> dict:
+    pin_memory = torch.cuda.is_available()
+    return {
+        "batch_size": config.batch_size,
+        "num_workers": config.num_workers,
+        "pin_memory": pin_memory,
+        "persistent_workers": config.num_workers > 0,
+    }
 
 
 class TextDataModule(pl.LightningDataModule):
@@ -127,7 +138,7 @@ class TextDataModule(pl.LightningDataModule):
         save_split_artifacts(train_frame, test_frame, self.config.split_dir)
 
         self.vocab = build_vocab(train_frame["Text"].tolist(), self.config)
-        self._collate_fn = make_collate_fn(self.vocab[PAD_TOKEN])
+        self._collate_fn = PadCollate(self.vocab[PAD_TOKEN])
         self._train_dataset = TextDataset(
             train_frame["Text"].tolist(),
             train_frame["label"].tolist(),
@@ -148,9 +159,9 @@ class TextDataModule(pl.LightningDataModule):
             raise RuntimeError("Data module must be set up before requesting dataloaders.")
         return DataLoader(
             self._train_dataset,
-            batch_size=self.config.batch_size,
             shuffle=True,
             collate_fn=self._collate_fn,
+            **_loader_kwargs(self.config),
         )
 
     def val_dataloader(self) -> DataLoader:
@@ -158,7 +169,7 @@ class TextDataModule(pl.LightningDataModule):
             raise RuntimeError("Data module must be set up before requesting dataloaders.")
         return DataLoader(
             self._test_dataset,
-            batch_size=self.config.batch_size,
             shuffle=False,
             collate_fn=self._collate_fn,
+            **_loader_kwargs(self.config),
         )

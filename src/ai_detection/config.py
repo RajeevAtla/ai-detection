@@ -18,6 +18,7 @@ class TrainConfig:
     num_layers: int = 1
     dropout: float = 0.2
     lowercase: bool = True
+    num_workers: int = 0
 
     def __post_init__(self) -> None:
         self.data_path = Path(self.data_path)

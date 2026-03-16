@@ -1,0 +1,60 @@
+{
+  "config": {
+    "data_path": "data\\data.csv",
+    "artifacts_dir": "artifacts\\smoke\\seq_len_32",
+    "test_size": 0.2,
+    "random_seed": 42,
+    "batch_size": 256,
+    "epochs": 2,
+    "learning_rate": 0.001,
+    "max_vocab_size": 20000,
+    "max_sequence_length": 32,
+    "embedding_dim": 128,
+    "hidden_dim": 128,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "lowercase": true,
+    "num_workers": 0
+  },
+  "device": "cuda:NVIDIA GeForce RTX 4050 Laptop GPU",
+  "train_size": 4855,
+  "test_size": 1214,
+  "vocab_size": 20000,
+  "checkpoint_path": "C:\\LLMs\\ai-detection\\artifacts\\smoke\\seq_len_32\\checkpoints\\best.ckpt",
+  "best_test_metrics": {
+    "loss": 0.3107605576515198,
+    "accuracy": 0.8855024576187134,
+    "precision": 0.9203540086746216,
+    "recall": 0.846905529499054,
+    "f1": 0.8821035027503967,
+    "epoch": 2.0
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.6760748624801636,
+      "train_accuracy": 0.5800206065177917,
+      "train_precision": 0.5769799947738647,
+      "train_recall": 0.6350305676460266,
+      "train_f1": 0.6046150922775269,
+      "test_loss": 0.633122444152832,
+      "test_accuracy": 0.6598023176193237,
+      "test_precision": 0.6300129294395447,
+      "test_recall": 0.7931596040725708,
+      "test_f1": 0.7022350430488586
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.4705215096473694,
+      "train_accuracy": 0.7882595062255859,
+      "train_precision": 0.8042643666267395,
+      "train_recall": 0.7682281136512756,
+      "train_f1": 0.7858333587646484,
+      "test_loss": 0.3107605576515198,
+      "test_accuracy": 0.8855024576187134,
+      "test_precision": 0.9203540086746216,
+      "test_recall": 0.846905529499054,
+      "test_f1": 0.8821035027503967
+    }
+  ]
+}
